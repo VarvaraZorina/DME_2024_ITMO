@@ -8,8 +8,11 @@
 ### Структура проекта
 ```
 DME_2024_ITMO/
+├── images/                     # Папка с графиками
+├── └── ...
 ├── dataset_input.xlsx          # Исходный файл с данными о погодных явлениях
 ├── dataset_output.csv          # Выходной файл с обработанными данными
+├── dme_backup.sql              # База данных PostgreSQL
 └── dme_project.ipynb           # Jupyter Notebook с кодом обработки и анализа данных
 ```
 
