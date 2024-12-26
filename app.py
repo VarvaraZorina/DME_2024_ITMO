@@ -99,7 +99,8 @@ if selected == "Общие показатели":
 
     data['start_date'] = pd.to_datetime(data['start_date'], errors='coerce')
     data['end_date'] = pd.to_datetime(data['end_date'], errors='coerce')
-    years = data['start_date'].dt.year.unique()
+    years = data.sort_values(by='start_date', ascending=False)
+    years = years['start_date'].dt.year.unique()
     selected_year = col2.selectbox("Выберите год:", years)
 
     filtered_data = data[(data['event_name'] == selected_event) & (data['start_date'].dt.year == selected_year)]
@@ -110,14 +111,15 @@ if selected == "Общие показатели":
         max_duration = filtered_data['duration'].max()
         min_duration = filtered_data['duration'].min()
 
-
         col1.markdown(f"**Интенсивность MAX**<br /><span style='font-size:48px; color:#ff4b4b; margin-bottom: 10px; text-align: center;'>{max_intensity}</span>", unsafe_allow_html=True)
         col1.markdown(f"**Интенсивность MIN**<br /><span style='font-size:48px; color:#ff4b4b; margin-bottom: 10px; text-align: center;'>{min_intensity}</span>", unsafe_allow_html=True)
-        
         col2.markdown(f"**Продолжительность MAX**<br /><span style='font-size:48px; color:#ff4b4b; margin-bottom: 10px; text-align: center;'>{max_duration}</span>", unsafe_allow_html=True)        
         col2.markdown(f"**Продолжительность MIN**<br /><span style='font-size:48px; color:#ff4b4b; margin-bottom: 10px; text-align: center;'>{min_duration}</span>", unsafe_allow_html=True)        
     else:
         st.write("Нет данных для выбранного события и года.")
+
+    filtered_data['original_event_intensity'] = filtered_data['event_intensity']
+    filtered_data['event_intensity'] = filtered_data['event_intensity'].abs() 
 
     fig = px.scatter(
         filtered_data,
@@ -125,7 +127,7 @@ if selected == "Общие показатели":
         y='event_intensity',
         size='event_intensity', 
         color='region',  
-        hover_name='event_name',
+        hover_name=filtered_data['original_event_intensity'].apply(lambda x: f"{x}" if x < 0 else f"{x}"),
         title=f'Интенсивность vs Продолжительность для {selected_event} в {selected_year}',
         labels={'duration': 'Продолжительность', 'event_intensity': 'Интенсивность', 'region': 'Регион'},
         size_max=60  
